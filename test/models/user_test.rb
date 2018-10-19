@@ -1,7 +1,6 @@
 require 'test_helper'
 
 class UserTest < ActiveSupport::TestCase
-  
   def setup
     @user = User.new(name: "Example User", email: "user@example.com",
               password: "foobar", password_confirmation: "foobar")
@@ -83,5 +82,35 @@ class UserTest < ActiveSupport::TestCase
     end
   end
   
+  test "should follow and unfollow a user" do
+    michael = users(:michael)
+    taro = users(:taro)
+    assert_not michael.following?(taro)
+    michael.follow(taro)
+    assert michael.following?(taro)
+    assert taro.followers.include?(michael)
+    michael.unfollow(taro)
+    assert_not michael.following?(taro)
+  end
   
+  test "feed should have the right posts" do
+    michael = users(:michael)
+    taro = users(:taro)
+    lana = users(:lana)
+    
+    # フォローしているユーザーの投稿を確認
+    lana.microposts.each do |post_following|
+      assert michael.feed.include?(post_following)
+    end
+    
+    # 自分自身の投稿を確認
+    michael.microposts.each do |post_self|
+      assert michael.feed.include?(post_self)
+    end
+    
+    # フォローしていないユーザーの投稿を確認
+    taro.microposts.each do |post_unfollowed|
+      assert_not michael.feed.include?(post_unfollowed)
+    end
+  end
 end
