@@ -10,5 +10,14 @@
     <% if current_user?(micropost.user) %>
       <%= link_to "削除", micropost, method: :delete, data: { confirm: "削除してもよろしいですか。" } %>
     <% end %>
+    <% if Like.find_by(user_id: @current_user.id, micropost_id: micropost.id) %>
+      <%= link_to "/likes/#{micropost.id}/destroy", method: :post do %>
+        <span class="fa fa-heart like-btn-unlike"></span>
+      <% end %>
+    <% else %>
+      <%= link_to "/likes/#{micropost.id}/create", method: :post do %>
+        <span class="fa fa-heart like-btn"></span>
+      <% end %>
+    <% end %>
   </span>
 </li>

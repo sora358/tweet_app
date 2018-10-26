@@ -113,4 +113,12 @@ class UserTest < ActiveSupport::TestCase
       assert_not michael.feed.include?(post_unfollowed)
     end
   end
+  
+  test "associated likes should be destroyed" do
+    @user.save
+    @user.likes.create!(micropost_id: 1)
+    assert_difference 'Like.count', -1 do
+      @user.destroy
+    end
+  end
 end
